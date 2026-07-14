@@ -67,6 +67,10 @@ class Deck:
 
         top_card = self.discard_pile.pop()
 
+        for card in self.discard_pile:
+            if isinstance(card, WildCard):
+                card.color = None
+
         self.draw_pile.extend(self.discard_pile)
         self.discard_pile.clear()
         self.discard_pile.append(top_card)
