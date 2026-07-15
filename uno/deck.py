@@ -12,6 +12,7 @@ class Deck:
     def __init__(self):
         self.draw_pile = self.create_deck()
         self.discard_pile = []
+        self.shuffle()
 
     def create_deck(self):
         draw_pile = []
