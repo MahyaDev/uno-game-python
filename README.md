@@ -1,68 +1,87 @@
 # UNO Game
 
-A Python implementation of the UNO card game using Object-Oriented Programming (OOP) principles.
+A Python implementation of the classic UNO card game using Object-Oriented Programming (OOP) principles.
 
 ## About the Project
 
 This project is a console-based implementation of the classic UNO card game in Python.
-It is being developed incrementally, with the game logic implemented first before adding a graphical user interface.
+The core game mechanics are fully playable through a command-line interface, with the code organized using OOP principles.
+A graphical user interface (GUI) may be added in the future.
 
 ## Project Structure
 
 ```text
-uno/
-├── card.py
-├── deck.py
-├── player.py
-└── game.py
+.
+├── main.py
+└── uno/
+    ├── card.py
+    ├── deck.py
+    ├── player.py
+    └── game.py
 ```
 
 ## Current Features
 
-### Card Module
+### Card System
 - Card representation
-- Card colors and values
 - Number, Action, and Wild cards
+- Card colors and values
 - Card validation
 - Playability rules
 
-### Deck Module
-- Standard UNO deck generation
+### Deck Management
+- Standard 108-card UNO deck generation
 - Deck shuffling
 - Drawing cards
 - Discard pile management
-- Recycling the discard pile
+- Automatic discard pile recycling
 
-### Player Module
+### Players
+- Human player
+- Basic bot player
 - Hand management
 - Drawing and playing cards
-- Playable card detection
-- Color selection for Wild cards
+- Wild card color selection
 - UNO call support
 
-### Game Module
+### Game Logic
 - Turn management
 - Player rotation
-- Direction handling
-- Card effect processing
-  - Skip
-  - Reverse
-  - Draw Two
-  - Wild
-  - Wild Draw Four
+- Reverse direction
+- Skip turns
+- Draw Two
+- Wild
+- Wild Draw Four
 - Win detection
+
+### Command-Line Interface
+- Interactive game setup
+- Configurable number of bot opponents
+- Random starting player
+- Play again option
+- Gameplay feedback in the terminal
 
 ## Technologies
 
 - Python 3
 - Object-Oriented Programming (OOP)
 
+## Learning Goals
+
+This project is part of my learning journey to improve my skills in:
+
+- Object-Oriented Programming (OOP)
+- Python
+- Software design
+- Git and GitHub workflow
+
 ## Future Plans
 
-- Computer-controlled player
-- Console interface improvements
+- Smarter bot strategy
+- Improved console interface
 - Graphical User Interface (GUI)
-- Additional game features and polishing
+- Additional UNO rules and game modes
+- Save game statistics
 
 ## Project Status
 
