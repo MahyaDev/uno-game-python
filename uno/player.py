@@ -1,5 +1,6 @@
 from .card import Card, CardColor
 from .deck import Deck
+import random
 
 STARTING_HAND_SIZE = 7
 
@@ -17,13 +18,13 @@ class Player:
     
     @name.setter
     def name(self, entry: str):
+        if not isinstance(entry, str):
+            raise TypeError("Name must be str")
+        
         entry = entry.strip()
 
-        if not isinstance(entry, str):
-            raise ValueError("Name must be str")
-
         if not entry:
-            raise ValueError("Name must contain some characters")
+            raise ValueError("Name cannot be empty or contain only spaces")
         
         self._name = entry
 
@@ -34,6 +35,11 @@ class Player:
         ]
 
     def choose_card(self, playable_cards: list[Card]) -> Card:
+        print("Your hand:")
+
+        for card in self.hand:
+            print(card)
+
         print("Playable cards:")
         for index, card in enumerate(playable_cards, 1):
             print(f"{index}. {card}")
@@ -50,11 +56,11 @@ class Player:
             except ValueError:
                 print("Invalid input! Please enter a number.")
 
-    def play_card(self, card: Card):
+    def play_card(self, card: Card) -> Card:
         self.hand.remove(card)
         return card
 
-    def choose_color(self):
+    def choose_color(self) -> CardColor:
         valid_colors = list(CardColor)
 
         print("Choose a color:")
@@ -82,6 +88,13 @@ class Player:
         
         return new_cards
 
-    def call_uno(self):
+    def call_uno(self) -> None:
         if len(self.hand) == 1:
             print("UNO! 🎯")
+
+class BotPlayer(Player):
+    def choose_card(self, playable_cards: list[Card]) -> Card:
+        return random.choice(playable_cards)
+    
+    def choose_color(self) -> CardColor:
+        return random.choice(list(CardColor))
