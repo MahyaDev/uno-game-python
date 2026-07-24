@@ -113,7 +113,7 @@ class Game:
             chosen_card = drawn_card
         
         else:
-            chosen_card = player.choose_card(playable_cards)
+            chosen_card = player.choose_card(playable_cards, self.current_card)
 
         print(f"{player.name} played {chosen_card}")
 
