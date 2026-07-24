@@ -5,7 +5,7 @@ A Python implementation of the classic UNO card game using Object-Oriented Progr
 ## About the Project
 
 This project is a console-based implementation of the classic UNO card game in Python.
-The core game mechanics are fully playable through a command-line interface, with the code organized using OOP principles.
+The core mechanics of the game are fully playable through a command-line interface, with the code organized using OOP principles.
 A graphical user interface (GUI) may be added in the future.
 
 ## Project Structure
@@ -38,14 +38,27 @@ A graphical user interface (GUI) may be added in the future.
 
 ### Players
 - Human player
-- Basic bot player
+- Heuristic-based AI bot player
 - Hand management
 - Drawing and playing cards
-- Wild card color selection
+- Strategic Wild card color selection
 - UNO call support
+
+### Bot Strategy
+
+The AI bot selects playable cards using a heuristic scoring system instead of choosing randomly.
+
+Current decision factors include:
+
+- Card type
+- Color and value matching
+- Dominant color in hand
+- Duplicate cards
+- Late-game Wild card usage
 
 ### Game Logic
 - Turn management
+- Polymorphic player system
 - Player rotation
 - Reverse direction
 - Skip turns
@@ -73,11 +86,12 @@ This project is part of my learning journey to improve my skills in:
 - Object-Oriented Programming (OOP)
 - Python
 - Software design
+- Heuristic algorithms
 - Git and GitHub workflow
 
 ## Future Plans
 
-- Smarter bot strategy
+- Context-aware bot strategy
 - Improved console interface
 - Graphical User Interface (GUI)
 - Additional UNO rules and game modes
