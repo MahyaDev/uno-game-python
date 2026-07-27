@@ -6,6 +6,7 @@ A Python implementation of the classic UNO card game using Object-Oriented Progr
 
 This project is a console-based implementation of the classic UNO card game in Python.
 The core mechanics of the game are fully playable through a command-line interface, with the code organized using OOP principles.
+It also includes a heuristic-based AI opponent that makes context-aware decisions instead of choosing playable cards randomly.
 A graphical user interface (GUI) may be added in the future.
 
 ## Project Structure
@@ -16,8 +17,9 @@ A graphical user interface (GUI) may be added in the future.
 └── uno/
     ├── card.py
     ├── deck.py
+    ├── game.py
     ├── player.py
-    └── game.py
+    └── turn_context.py
 ```
 
 ## Current Features
@@ -46,7 +48,7 @@ A graphical user interface (GUI) may be added in the future.
 
 ### Bot Strategy
 
-The AI bot selects playable cards using a heuristic scoring system instead of choosing randomly.
+The bot uses a heuristic scoring system to evaluate all playable cards and selects the highest-scoring move instead of making random choices.
 
 Current decision factors include:
 
@@ -55,24 +57,25 @@ Current decision factors include:
 - Dominant color in hand
 - Duplicate cards
 - Late-game Wild card usage
+- Next-player hand size awareness for more strategic Action and Wild card usage
 
 ### Game Logic
 - Turn management
+- Turn context abstraction for player decision making
 - Polymorphic player system
 - Player rotation
-- Reverse direction
-- Skip turns
-- Draw Two
-- Wild
-- Wild Draw Four
+- Action card effects
+- Wild card effects
 - Win detection
 
 ### Command-Line Interface
 - Interactive game setup
 - Configurable number of bot opponents
 - Random starting player
-- Play again option
+- Live hand-size display for all players
+- UNO status indicators
 - Gameplay feedback in the terminal
+- Play again option
 
 ## Technologies
 
@@ -91,8 +94,7 @@ This project is part of my learning journey to improve my skills in:
 
 ## Future Plans
 
-- Context-aware bot strategy
-- Improved console interface
+- More advanced bot heuristics
 - Graphical User Interface (GUI)
 - Additional UNO rules and game modes
 - Save game statistics
