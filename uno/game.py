@@ -7,6 +7,7 @@ from .card import (
 )
 from .deck import Deck
 from .player import Player
+from .turn_context import TurnContext
 
 class Game:
     MIN_PLAYERS = 2
@@ -97,8 +98,23 @@ class Game:
         print(f"🙋🏻‍♂️ {player.name}'s turn")
         print(f"♣️ Current card: {self.current_card}")
         print('-' * 16)
+        print("Hand Sizes:")
+
+        for p in self.players:
+            count = len(p.hand)
+            prefix = "▶️" if p == player else ""
+
+            if count == 1:
+                print(f"{prefix} {p.name}: 1 card, UNO! 🎯")
+            else:
+                print(f"{prefix} {p.name}: {count} cards")
 
         playable_cards = player.get_playable_cards(self.current_card)
+
+        context = TurnContext(
+            current_card=self.current_card,
+            next_player=self.players[self.get_next_player_index()]
+        )
 
         if not playable_cards:
             print(f"{player.name} has no playable card. Drawing a card...")
@@ -113,7 +129,7 @@ class Game:
             chosen_card = drawn_card
         
         else:
-            chosen_card = player.choose_card(playable_cards, self.current_card)
+            chosen_card = player.choose_card(playable_cards, context)
 
         print(f"{player.name} played {chosen_card}")
 

@@ -4,9 +4,11 @@ from .card import (
     WildCard,
     ActionCard,
     NumberCard,
-    WildCardValue
+    WildCardValue,
+    ActionCardValue
 )
 from .deck import Deck
+from .turn_context import TurnContext
 import random
 
 STARTING_HAND_SIZE = 7
@@ -41,7 +43,7 @@ class Player:
             if card.is_playable(current_card)
         ]
 
-    def choose_card(self, playable_cards: list[Card], current_card: Card) -> Card:
+    def choose_card(self, playable_cards: list[Card], context: TurnContext) -> Card:
         print("Your hand:")
 
         for card in self.hand:
@@ -117,14 +119,20 @@ class BotPlayer(Player):
     LATE_GAME_WILD_BONUS = 30
     LATE_GAME_DRAW4_BONUS = 35
 
-    def choose_card(self, playable_cards: list[Card], current_card: Card) -> Card:
+    LOW_HAND_WILD_BONUS = 25
+    LOW_HAND_DRAW4_BONUS = 40
+    LOW_HAND_DRAW2_BONUS = 20
+    LOW_HAND_SKIP_BONUS = 15
+    LOW_HAND_REVERSE_BONUS = 10
+
+    def choose_card(self, playable_cards: list[Card], context: TurnContext) -> Card:
         dominant_colors = self.get_dominant_colors()
 
         best_cards = []
         best_score = -float('inf')
 
         for card in playable_cards:
-            score = self.calculate_strategic_score(card, current_card, dominant_colors)
+            score = self.calculate_strategic_score(card, context, dominant_colors)
             
             if score > best_score:
                 best_score = score
@@ -152,14 +160,14 @@ class BotPlayer(Player):
         
         return random.choice(best_colors)
     
-    def calculate_strategic_score(self, card: Card, current_card: Card, dominant_colors: dict[CardColor, int]) -> int:
+    def calculate_strategic_score(self, card: Card, context: TurnContext, dominant_colors: dict[CardColor, int]) -> int:
         score = 0
 
         score += self.calculate_card_type_score(card)
-        score += self.calculate_matching_score(card, current_card)
+        score += self.calculate_matching_score(card, context.current_card)
         score += self.calculate_dominant_color_score(card, dominant_colors)
         score += self.calculate_duplicate_score(card)
-        score += self.calculate_late_game_score(card)
+        score += self.calculate_game_state_score(card, context.next_player)
 
         return score
 
@@ -217,10 +225,10 @@ class BotPlayer(Player):
 
         return score
 
-    def calculate_late_game_score(self, card: Card) -> int:
+    def calculate_game_state_score(self, card: Card, next_player: Player) -> int:
         score = 0
 
-        if not isinstance(card, WildCard):
+        if not isinstance(card, (WildCard, ActionCard)):
             return 0
 
         if len(self.hand) == 3:
@@ -230,6 +238,18 @@ class BotPlayer(Player):
                 score += self.LATE_GAME_WILD_BONUS
             elif card.value == WildCardValue.WILD_DRAW_FOUR:
                 score += self.LATE_GAME_DRAW4_BONUS
+
+        if len(next_player.hand) <= 3:
+            if card.value == WildCardValue.WILD:
+                score += self.LOW_HAND_WILD_BONUS
+            elif card.value == WildCardValue.WILD_DRAW_FOUR:
+                score += self.LOW_HAND_DRAW4_BONUS
+            elif card.value == ActionCardValue.DRAW_TWO:
+                score += self.LOW_HAND_DRAW2_BONUS
+            elif card.value == ActionCardValue.SKIP:
+                score += self.LOW_HAND_SKIP_BONUS
+            elif card.value == ActionCardValue.REVERSE:
+                score += self.LOW_HAND_REVERSE_BONUS
 
         return score
         
