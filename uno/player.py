@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from .card import (
     Card,
     CardColor,
@@ -13,7 +14,7 @@ import random
 
 STARTING_HAND_SIZE = 7
 
-class Player:
+class Player(ABC):
     def __init__(self, deck: Deck, name: str):
         self.hand = [
             deck.draw_card()
@@ -37,57 +38,27 @@ class Player:
         
         self._name = entry
 
+    @property
+    def needs_external_input(self) -> bool:
+        return False
+
     def get_playable_cards(self, current_card: Card) -> list[Card]:
         return [
             card for card in self.hand
             if card.is_playable(current_card)
         ]
 
+    @abstractmethod
     def choose_card(self, playable_cards: list[Card], context: TurnContext) -> Card:
-        print("Your hand:")
-
-        for card in self.hand:
-            print(card)
-
-        print("Playable cards:")
-        
-        for index, card in enumerate(playable_cards, 1):
-            print(f"{index}. {card}")
-
-        while True:
-            try:
-                choice = int(input("Choose a card: "))
-                idx = choice - 1
-
-                if 0 <= (idx) < len(playable_cards):
-                    return playable_cards[idx]
-                print("Invalid choice!")
-
-            except ValueError:
-                print("Invalid input! Please enter a number.")
+        pass
 
     def play_card(self, card: Card) -> Card:
         self.hand.remove(card)
         return card
 
+    @abstractmethod
     def choose_color(self) -> CardColor:
-        valid_colors = list(CardColor)
-
-        print("Choose a color:")
-        for index, color in enumerate(valid_colors, 1):
-            print(f"{index}. {color.name} {color.emoji}")
-
-        while True:
-            try:
-                choice = int(input("Enter your chosen color (1-4): "))
-                idx = choice - 1
-
-                if 0 <= idx < len(valid_colors):
-                    return valid_colors[idx]
-                print("Invalid choice! Please enter 1-4")
-
-            except ValueError:
-                print("Invalid input! Please enter a number.")
+        pass
 
     def draw_card(self, deck: Deck, cards_to_draw: int = 1):
         new_cards = [deck.draw_card() for _ in range(cards_to_draw)]
@@ -98,9 +69,19 @@ class Player:
         
         return new_cards
 
-    def call_uno(self) -> None:
-        if len(self.hand) == 1:
-            print("UNO! 🎯")
+    def call_uno(self) -> bool:
+        return len(self.hand) == 1
+
+class HumanPlayer(Player):
+    @property
+    def needs_external_input(self) -> bool:
+        return True
+
+    def choose_card(self, playable_cards: list[Card], context: TurnContext) -> Card:
+        raise NotImplementedError("GUI must choose the card")
+
+    def choose_color(self) -> CardColor:
+        raise NotImplementedError("GUI must choose the color")
 
 class BotPlayer(Player):
     NUMBER_CARD_SCORE = 10
@@ -124,6 +105,10 @@ class BotPlayer(Player):
     LOW_HAND_DRAW2_BONUS = 20
     LOW_HAND_SKIP_BONUS = 15
     LOW_HAND_REVERSE_BONUS = 10
+
+    @property
+    def needs_external_input(self) -> bool:
+        return False
 
     def choose_card(self, playable_cards: list[Card], context: TurnContext) -> Card:
         dominant_colors = self.get_dominant_colors()
