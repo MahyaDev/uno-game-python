@@ -7,7 +7,7 @@ from PySide6.QtWidgets import (
     QListWidget
 )
 from PySide6.QtCore import Qt, Signal
-from uno.card import Card, CardColor
+from uno.card import Card, CardColor, WildCard
 from uno.player import Player
 
 class GameWidget(QWidget):
@@ -88,23 +88,108 @@ class GameWidget(QWidget):
 
         self.rebuild_hand_buttons(player.hand, playable_cards)
 
+    def card_style(self, card: Card, playable: bool) -> str:
+        color_map = {
+            CardColor.RED: "#e53935",
+            CardColor.BLUE: "#1e88e5",
+            CardColor.GREEN: "#43a047",
+            CardColor.YELLOW: "#fdd835",
+        }
+
+        if isinstance(card, WildCard):
+            background = "#424242"
+            text = "white"
+        else:
+            background = color_map.get(card.color, "#757575")
+            text = "black" if card.color == CardColor.YELLOW else "white"
+
+        if not playable:
+            background = "#bdbdbd"
+            text = "#666666"
+
+        return f"""
+            QPushButton {{
+                background-color: {background};
+                color: {text};
+                border: 2px solid black;
+                border-radius: 12px;
+                font-size: 18px;
+                font-weight: bold;
+            }}
+
+            QPushButton:hover:enabled {{
+                border: 3px solid white;
+            }}
+
+            QPushButton:pressed:enabled {{
+                background-color: #222222;
+            }}
+        """
+
     def rebuild_hand_buttons(self, hand: list[Card], playable_cards: list[Card]) -> None:
         while self.hand_layout.count():
             item = self.hand_layout.takeAt(0)
             item.widget().deleteLater()
 
+        self.hand_layout.setSpacing(12)
+
         for card in hand:
-            button = QPushButton(str(card))
-            button.setEnabled(card in playable_cards)
+            playable = card in playable_cards
+
+            text = str(card)
+
+            text = (
+                text.replace(" wild draw four", "\nwild\ndraw four")
+                    .replace(" reverse", "\nreverse")
+                    .replace(" draw two", "\ndraw two")
+            )
+
+            button = QPushButton(text)
+            button.setFixedSize(90, 120)
+            button.setEnabled(playable)
+            button.setStyleSheet(self.card_style(card, playable))
 
             button.clicked.connect(lambda checked, card=card: self.card_selected.emit(card))
 
             self.hand_layout.addWidget(button)
 
+    def color_button_style(self, color: CardColor) -> str:
+        color_map = {
+            CardColor.RED: ("#e53935", "white"),
+            CardColor.BLUE: ("#1e88e5", "white"),
+            CardColor.GREEN: ("#43a047", "white"),
+            CardColor.YELLOW: ("#fdd835", "black"),
+        }
+
+        background, text = color_map[color]
+
+        return f"""
+            QPushButton {{
+                background-color: {background};
+                color: {text};
+                border: 2px solid black;
+                border-radius: 12px;
+                font-size: 16px;
+                font-weight: bold;
+                padding: 8px;
+            }}
+
+            QPushButton:hover {{
+                border: 3px solid white;
+            }}
+
+            QPushButton:pressed {{
+                background-color: #222222;
+            }}
+        """
+
     def build_color_button(self) -> None:
+        self.color_layout.setSpacing(12)
+
         for color in CardColor:
-            button = QPushButton(f"{color.name} {color.emoji}")
-            button.setFixedWidth(80)
+            button = QPushButton(f"{color.emoji}\n{color.name}")
+            button.setFixedSize(90, 80)
+            button.setStyleSheet(self.color_button_style(color))
 
             button.clicked.connect(lambda checked, color=color: self.color_selected.emit(color))
 

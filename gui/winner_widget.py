@@ -50,9 +50,7 @@ class WinnerWidget(QWidget):
         self.main_layout.addWidget(self.play_again_label, alignment=Qt.AlignCenter)
 
         self.button_row = QHBoxLayout()
-        self.button_row.setSpacing(10)
-
-        self.button_row.addStretch()
+        self.button_row.setSpacing(20)
 
         self.yes_btn = QPushButton("✔ Yes")
         self.yes_btn.setFixedWidth(100)
@@ -66,6 +64,8 @@ class WinnerWidget(QWidget):
 
         self.button_row.addWidget(self.yes_btn, alignment=Qt.AlignCenter)
         self.button_row.addWidget(self.no_btn, alignment=Qt.AlignCenter)
+
+        self.button_row.addStretch()
 
         self.main_layout.addLayout(self.button_row)
 
